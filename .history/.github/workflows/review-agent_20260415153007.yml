@@ -1,3 +1,5 @@
+
+```yaml
 name: Review Agent Workflow
 
 on:
@@ -32,14 +34,6 @@ jobs:
 
       - name: Generate review artifacts
         run: python3 scripts/generate_review.py
-
-      - name: Show generated files
-        run: |
-          ls -l reviews
-          echo "----- UserService-review.md -----"
-          cat reviews/UserService-review.md
-          echo "----- UserService-fix-suggestions.md -----"
-          cat reviews/UserService-fix-suggestions.md
 
       - name: Upload Review Artifacts
         uses: actions/upload-artifact@v4
