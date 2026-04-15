@@ -1,0 +1,56 @@
+name: Review Agent Workflow
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Create reviews folder
+        run: mkdir -p reviews
+
+      - name: Generate Review Report (POC)
+        run: |
+          echo "# UserService Review" > reviews/UserService-review.md
+          echo "" >> reviews/UserService-review.md
+          echo "## Summary" >> reviews/UserService-review.md
+          echo "Automated review triggered by GitHub Action." >> reviews/UserService-review.md
+
+      - name: Generate Fix Suggestions (POC)
+        run: |
+          echo "# Fix Suggestions" > reviews/UserService-fix-suggestions.md
+          echo "" >> reviews/UserService-fix-suggestions.md
+          echo "Refer to Copilot agent output for full fixes." >> reviews/UserService-fix-suggestions.md
+
+      - name: Upload Review Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: review-artifacts
+          path: reviews/
+
+      - name: Comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: "🤖 Review Agent executed. Check artifacts for detailed findings."
+            })
+
+      # OPTIONAL: Email step (needs secrets)
+      - name: Send Email (Optional)
+        if: false
+        run: |
+          echo "Integrate with SendGrid / SMTP here"
